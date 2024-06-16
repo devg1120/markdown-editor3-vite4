@@ -1,0 +1,2 @@
+npx prettier ./main_split.js --write
+npx prettier ./MarkDownEditor.js --write
