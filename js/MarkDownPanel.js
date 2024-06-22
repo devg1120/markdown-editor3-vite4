@@ -167,25 +167,156 @@ export class MarkDownPanel {
       false,
     );
 
-  this.fileTree = document.querySelector("file-tree");
-   console.log(this.fileTree);
+    this.fileTree = document.querySelector("file-tree");
+    console.log(this.fileTree);
 
-  this.fileTree.addEventListener("ready", this.onReady);
+    this.fileTree.addEventListener("ready", this.onReady(that));
+    this.fileTree.addEventListener("browsing", this.onBrowsing);
 
-  //this.query = document.querySelector('[name="query"]');
-  //this.searchResults = document.querySelector("#search-results");
-  //this.searchTypes = [...document.querySelectorAll('[name="search-type"]')];
-
+    //this.query = document.querySelector('[name="query"]');
+    //this.searchResults = document.querySelector("#search-results");
+    //this.searchTypes = [...document.querySelectorAll('[name="search-type"]')];
   } // end constructor
 
-  onReady() {
-  this.query = document.querySelector('[name="query"]');
-  this.searchResults = document.querySelector("#search-results");
-  this.searchTypes = [...document.querySelectorAll('[name="search-type"]')];
+  onTest = (e) => {
+    console.log("onTest");
+  };
+
+  onTest2(e) {
+    console.log("onTest");
+  }
+  onReady(that) {
+    //let that = this;
+    this.query = document.querySelector('[name="query"]');
+    this.searchResults = document.querySelector("#search-results");
+    this.searchTypes = [...document.querySelectorAll('[name="search-type"]')];
     console.log("onReady");
     console.log(this.query);
-     this.query.disabled = false
+    this.query.disabled = false;
+
+    //this.query.addEventListener("keyup", this.debouncedSearch);
+
+    this.query.addEventListener(
+      "keyup",
+      function (ev) {
+        //this.debouncedSearch();
+        console.log("kup");
+        that.onTest2();
+        that.debouncedSearch();
+      },
+      false,
+    );
+
+    //this.searchResults.addEventListener("click", this.openFoundFile);
+    this.searchResults.addEventListener(
+      "click",
+      function (ev) {
+        console.log("click");
+        that.openFoundFile(ev);
+      },
+      false,
+    );
   }
+  onBrowaing() {
+    this.query.disabled = true;
+  }
+
+  openFoundFile(e) {
+    console.log("open found file");
+    const li = [...e.composedPath()].find(
+      (el) => el.matches && el.matches("li"),
+    );
+
+    if (li) {
+      const file = li.dataset.path;
+      this.fileTree.openFileByPath(file);
+
+      if (li.dataset.line !== undefined) {
+        setTimeout(() => selectLine(li.dataset.line), 250);
+      }
+    }
+  }
+
+  debouncedSearch(ev) {
+    console.log("debouncedSearch");
+    const debounce = (func, delay, immediate) => {
+      let timeout;
+
+      return function () {
+        const context = this;
+        const args = arguments;
+
+        const later = function () {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+
+        const callNow = immediate && !timeout;
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, delay);
+
+        if (callNow) {
+          func.apply(context, args);
+        }
+      };
+    };
+
+    debounce(this.search, 500)();
+  }
+
+  search = async () => {
+    console.log("search");
+    const searchType = this.searchTypes.find((type) => type.checked).value;
+
+    const term = this.query.value;
+
+    if (term.trim() !== "") {
+      const { results } =
+        searchType === "files"
+          ? this.fileTree.findFile(term)
+          : await this.fileTree.findInFiles(term);
+      console.log(results);
+      const listFoundFiles = (list, { path, highlight }) => {
+        list.insertAdjacentHTML(
+          "beforeend",
+          `<li data-path="${path}">${highlight[1]} <span class="path">${highlight[0]}</span></li>`,
+        );
+
+        return list;
+      };
+
+      const listFoundInFiles = (list, { path, rows }) => {
+        const file = path.split("/").pop();
+        list.insertAdjacentHTML(
+          "beforeend",
+          `<li data-path="${path}"><strong>${file}</strong></li>`,
+        );
+
+        rows.forEach(({ line, content }) =>
+          list.insertAdjacentHTML(
+            "beforeend",
+            `<li data-path="${path}" data-line="${line}">${line}: ${content}</li>`,
+          ),
+        );
+
+        return list;
+      };
+
+      const listSearchResults =
+        searchType === "files" ? listFoundFiles : listFoundInFiles;
+
+      const resultsList = results.reduce(
+        listSearchResults,
+        document.createElement("ul"),
+      );
+
+      this.searchResults.innerHTML = "";
+      this.searchResults.insertAdjacentElement("beforeend", resultsList);
+    } else {
+      this.searchResults.innerHTML = "";
+    }
+  };
   init_html(parent) {
     parent.innerHTML = `
 
@@ -426,7 +557,6 @@ export class MarkDownPanel {
 	`;
   }
   toc_switch() {
-
     var toc1 = document.querySelector(this.parent_id + " " + "#toc1");
     var toc_separator1 = document.querySelector(
       this.parent_id + " " + "#toc-separator1",
@@ -470,10 +600,10 @@ export class MarkDownPanel {
   }
 
   content_change() {
-      console.log("presetValue call 5");
+    console.log("presetValue call 5");
     this.editor1.presetValue(
       this.contents.getContent(this.contents_select.value),
-	    this.detail.path
+      this.detail.path,
     );
   }
 
@@ -869,7 +999,7 @@ export class MarkDownPanel {
       }
     }
     //presetValue(defaultInput);
-      console.log("presetValue call 3");
+    console.log("presetValue call 3");
     presetValue(editor, defaultInput);
     document
       .querySelectorAll(this.parent_id + " " + ".column")
@@ -1145,7 +1275,7 @@ export class MarkDownPanel {
     );
     //editor1.presetValue(defaultInput);
     //this.editor1.presetValue(this.contents.getContent("content1"));
-      console.log("presetValue call 4");
+    console.log("presetValue call 4");
     this.editor1.presetValue(this.contents.getContent(content));
     this.contents_select.options[1].selected = true;
 
