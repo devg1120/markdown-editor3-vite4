@@ -305,7 +305,7 @@ export class FileTree extends HTMLElement {
   }
 
   async getFileHandleByPath(dirHandle, path_array) {
-    //console.log("getFileHandleByPath:", dirHandle.name, path_array);
+    console.log("getFileHandleByPath:", dirHandle.name, path_array);
     if (path_array.length == 1) {
       for await (let [name, handle] of dirHandle) {
         //console.log("  name1:", name, handle.kind);
@@ -338,10 +338,7 @@ export class FileTree extends HTMLElement {
   }
 
   async openFileByPath(filePath) {
-    //console.log("openFileByPath ",this.currentDirectory);
-    console.log("openFileByPath :", filePath);
-    //const [_, {handle}] = this.findEntry(filePath, this.currentDirectory);
-    //const handle =   this.currentDirectory.handle.getFileHandle(filePath.slice(1));
+    console.log("openFileByPath filePath:", filePath);
     let path_array = filePath.split("/");
     console.log(path_array);
     let path_array_ = [];
@@ -349,17 +346,19 @@ export class FileTree extends HTMLElement {
       path_array.shift();
     } else if (path_array[0] == ".") {
       path_array.shift();
+    //} else if (path_array[0] == this.currentPath) {
+    //  path_array.shift();
     } else {
+      path_array.shift();
     }
     console.log(path_array);
-    let top_path = this.currentPath.slice(0, -1);
-    let path_c_array = top_path.concat(path_array);
+   // let top_path = this.currentPath.slice(0, -1);
+   // let path_c_array = top_path.concat(path_array);
+    let path_c_array = path_array;
 
-    console.log("resolve", this.currentPath);
-    console.log("top_path", top_path);
-    console.log("path", path_c_array);
-    //console.log("DirectoryHandle:",this.DirectoryHandle);
-    //console.log("path_array:",path_array);
+    //console.log("top_path", top_path);
+    console.log("path_c_rray", path_c_array);
+    console.log("currentDirectory.handle:",this.currentDirectory.handle);
     const handle = await this.getFileHandleByPath(
       this.currentDirectory.handle,
       path_c_array,
@@ -367,8 +366,6 @@ export class FileTree extends HTMLElement {
     //const handle =   await this.getFileHandleByPath(this.DirectoryHandle, path_array);
 
     console.log("Handle", handle);
-    console.log("filePath", filePath);
-    console.log("DirctoryHandle",this.currentDirectory.path);
     let path_s = await this.currentDirectory.handle.resolve(handle);
 
     let path =  this.currentDirectory.path;
@@ -923,7 +920,6 @@ export class FileTree extends HTMLElement {
   }
 
   highlightFile(filePath) {
-    console.log("highlightFile::", filePath);
 
     const [_, fileObj] = this.findEntry(filePath, this.currentDirectory);
 

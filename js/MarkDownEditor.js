@@ -198,7 +198,6 @@ export class MarkDownEditor {
   }
 
   convert(id, markdown) {
-    console.log("convert");
     let that = this;
     function href_jump(e) {
       console.log("href_jump");
@@ -226,7 +225,6 @@ export class MarkDownEditor {
           let dir = that.filepath.split("/");
           let B_path = "";
           for (let i = 0; i < dir.length - 1; i++) {
-            console.log(dir[i]);
             B_path = B_path + "/" + dir[i];
           }
           //child.setAttribute("src", "/development-diary" + src);
@@ -597,7 +595,6 @@ var char = string.indexOf(index) ;
 
   //let presetValue = (value) => {
   presetValue(value, filepath) {
-    console.log("filepath", filepath);
     this.filepath = filepath;
     this.editor.setValue(value);
     this.editor.moveCursorTo(0, 0);

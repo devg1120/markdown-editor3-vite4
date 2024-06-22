@@ -168,6 +168,7 @@ export class MarkDownPanel {
     );
 
     this.fileTree = document.querySelector("file-tree");
+    console.log(this.fileTree);
 
     this.fileTree.addEventListener("ready", this.onReady(that));
     this.fileTree.addEventListener("browsing", this.onBrowsing);
@@ -189,6 +190,8 @@ export class MarkDownPanel {
     this.query = document.querySelector('[name="query"]');
     this.searchResults = document.querySelector("#search-results");
     this.searchTypes = [...document.querySelectorAll('[name="search-type"]')];
+    console.log("onReady");
+    console.log(this.query);
     this.query.disabled = false;
 
     //this.query.addEventListener("keyup", this.debouncedSearch);
@@ -197,6 +200,7 @@ export class MarkDownPanel {
       "keyup",
       function (ev) {
         //this.debouncedSearch();
+        console.log("kup");
         that.onTest2();
         that.debouncedSearch();
       },
@@ -207,6 +211,7 @@ export class MarkDownPanel {
     this.searchResults.addEventListener(
       "click",
       function (ev) {
+        console.log("click");
         that.openFoundFile(ev);
       },
       false,
@@ -395,14 +400,12 @@ export class MarkDownPanel {
 
 
     <main data-flex-splitter-vertical  style="flex: auto">
-      <div data-flex-splitter-horizontal  style="flex: auto">
 
          <file-tree >
           <button type="button" slot="browse-button">Open directory</button>
           <label id="topdir" slot="browse-path">-------------</label>
         </file-tree>
 
-        <div id="filetree-separator0" role="separator" tabindex="1" class="separator"></div>
        <div id="search">
           <div id="search-container">
             <div class="controls">
@@ -433,7 +436,6 @@ export class MarkDownPanel {
             <div id="search-results"></div>
           </div>
         </div>
-       </div>
 
         <div id="filetree-separator1" role="separator" tabindex="1" class="separator"></div>
       <div
@@ -884,6 +886,7 @@ export class MarkDownPanel {
   }
 
   async openFileHandle(detail) {
+    console.log("openFIleHandle detail: ", detail);
     /*
         const pickerOpts = {
             types: [
@@ -904,6 +907,8 @@ export class MarkDownPanel {
 
     this.detail = detail;
     this.fileHandle = detail.handle;
+    console.log("*** MarkDownPanel:fn: ", this.fileHandle);
+    console.log("*** MarkDownPanel:fn: ", this.detail.path);
 
     this.filepath = await this.fileHandle.getFile();
 
@@ -918,6 +923,7 @@ export class MarkDownPanel {
       let input = reader.result;
       //presetValue(input);
       //presetValue(editor, input);
+      console.log("presetValue call 2", that.detail);
       that.editor1.presetValue(input, that.detail.path);
       document
         .querySelectorAll(this.parent_id + " " + ".column")
@@ -993,6 +999,7 @@ export class MarkDownPanel {
       }
     }
     //presetValue(defaultInput);
+    console.log("presetValue call 3");
     presetValue(editor, defaultInput);
     document
       .querySelectorAll(this.parent_id + " " + ".column")
@@ -1268,6 +1275,7 @@ export class MarkDownPanel {
     );
     //editor1.presetValue(defaultInput);
     //this.editor1.presetValue(this.contents.getContent("content1"));
+    console.log("presetValue call 4");
     this.editor1.presetValue(this.contents.getContent(content));
     this.contents_select.options[1].selected = true;
 
